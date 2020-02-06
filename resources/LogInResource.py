@@ -15,6 +15,8 @@ class LoginEndpoint(Resource):
             body = request.get_json()
             email = body.get('email')
             password = body.get('password')
+            if not email or not password:
+                return {'Error': 'Email or password missing'}, 401
             user = User.objects.get(email=email)
             authorized = self.check_password(password,user.password)
             if not authorized:
