@@ -2,6 +2,7 @@ from flask import request
 from flask_restful import Resource
 from flask_bcrypt import check_password_hash
 from flask_jwt_extended import create_access_token
+from flask_jwt_extended import jwt_required #Not necessary here
 import datetime
 from mongoengine.errors import DoesNotExist
 
@@ -29,6 +30,11 @@ class LoginEndpoint(Resource):
         return check_password_hash(usr_pass,req_pass)
 
     def create_jwt_token(self,usr_id):
-        expires = datetime.timedelta(hours=0.1)
+        expires = datetime.timedelta(minutes=2)#Update time delta to something useful
         access_token = create_access_token(identity=str(usr_id), expires_delta=expires)
         return access_token
+    
+    #Mock route to test token
+    @jwt_required
+    def get(self):
+        return {'Cool': 'You have access'}, 200
