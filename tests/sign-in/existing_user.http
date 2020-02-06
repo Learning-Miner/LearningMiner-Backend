@@ -1,0 +1,8 @@
+POST http://localhost:5000/api/signup
+Content-Type: application/json
+
+{   
+    "email": "david97molano@gmail.com",
+    "password": "elmolda2020",
+    "rol": "Student"
+}

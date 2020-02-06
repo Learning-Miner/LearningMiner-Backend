@@ -1,2 +1,4 @@
+from .SignUpResource import SignupEndpoint
+
 def initialize_routes(api):
-    pass
+    api.add_resource(SignupEndpoint, '/api/signup')
