@@ -1,2 +1,5 @@
+
+from .LogInResource import LoginEndpoint
 def initialize_routes(api):
-    pass
+    
+    api.add_resource(LoginEndpoint, '/api/login')
