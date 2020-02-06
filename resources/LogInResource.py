@@ -22,7 +22,7 @@ class LoginEndpoint(Resource):
             if not authorized:
                 return {'Error': 'Email or password invalid'}, 401
             access_token = self.create_jwt_token(user.id)
-            return {'token': access_token}, 200
+            return {'token': access_token, 'uid': str(user.id)}, 200
         except DoesNotExist:
             return {'Error': 'Email or password invalid'}, 401
         except Exception:
