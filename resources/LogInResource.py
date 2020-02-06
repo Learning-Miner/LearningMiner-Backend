@@ -8,10 +8,11 @@ class LoginEndpoint(Resource):
     def post(self):
         body = request.get_json()
         user = User.objects.get(email=body.get('email'))
+        print("PsReq:",body.get('password'))
         authorized = self.check_password(body.get('password'),user.password)
         if not authorized:
             return {'Error': 'Email or password invalid'}, 401
         return {'Login ok': 123456}, 200
 
     def check_password(self,req_pass,usr_pass):
-        return check_password_hash(req_pass,usr_pass)
+        return check_password_hash(usr_pass,req_pass)
