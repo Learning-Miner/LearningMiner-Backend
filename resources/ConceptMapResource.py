@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import request
+from flask import Response, request
 from flask_restful import Resource
 from database.db import db
 from database.models.ConceptMap import ConceptMap, Concept, Proposition
@@ -17,7 +17,7 @@ class CreateConceptMapEndpoint(Resource):
             return {'Error': "Failed"}, 500
         
 class AlterConceptMapEndpoint(Resource):
-    def put(self,id):
+    def put(self,id):#AKA Save
         try:
             body = request.get_json()
             ob = ObjectBuilder()
@@ -28,6 +28,14 @@ class AlterConceptMapEndpoint(Resource):
         except Exception as e:
             print(str(e))
             return {'Error': "Failed"}, 500
+
+    def delete(self,id):
+        ConceptMap.objects.get(id=id).delete()
+        return '', 204
+
+    def get(self,id):
+        cm = ConceptMap.objects.get(id=id).to_json()
+        return Response(cm, mimetype="application/json", status=200)
 
 class ObjectBuilder():
     def create_concept_list(self,json_cpts):

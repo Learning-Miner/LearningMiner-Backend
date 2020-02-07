@@ -1,0 +1,61 @@
+POST http://localhost:5000/api/cpt-map
+Content-Type: application/json
+
+{
+  "uid": "5e3ca096aa36a03111f4d6a9",
+  "isBase": true,
+    "concepts": [
+        {
+            "text": "Football",
+            "x": 749,
+            "y": 115,
+            "id": "32e21895"
+        },
+        {
+            "text": "Sport",
+            "x": 444,
+            "y": 206,
+            "id": "55394ba0"
+        },
+        {
+            "text": "England<br>",
+            "x": 748,
+            "y": 270,
+            "id": "ccfe97df"
+        },
+        {
+            "text": "teams of 11",
+            "x": 1039,
+            "y": 202,
+            "id": "c81c3def"
+        },
+        {
+            "text": "all over the world",
+            "x": 749,
+            "y": 430,
+            "id": "8aa59eec"
+        }
+    ],
+    "propositions": [
+        {
+            "text": "is a<br>",
+            "frm": "32e21895",
+            "to": "55394ba0"
+        },
+        {
+            "text": "invented in<br>",
+            "frm": "32e21895",
+            "to": "ccfe97df"
+        },
+        {
+            "text": "played in<br>",
+            "frm": "32e21895",
+            "to": "c81c3def"
+        },
+        {
+            "text": "famous<br>",
+            "frm": "ccfe97df",
+            "to": "8aa59eec"
+        }
+    ]
+}
