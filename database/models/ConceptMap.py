@@ -1,5 +1,5 @@
 from ..db import db
-
+from .User import User
 class Concept(db.EmbeddedDocument):
     text = db.StringField() 
     x = db.IntField()
@@ -12,9 +12,9 @@ class Proposition(db.EmbeddedDocument):
     to = db.StringField()
 
 class ConceptMap(db.Document):
-    uid = db.StringField(required=True)
-    isBase = db.StringField(required=True)
-    dateCreated = db.StringField()
-    dateFinished = db.StringField()
+    uid = db.ReferenceField('User')
+    isBase = db.BooleanField(required=True)
+    dateCreated = db.DateTimeField(required=True)
+    dateFinished = db.DateTimeField()
     concepts = db.ListField(db.EmbeddedDocumentField("Concept"))
     propositions = db.ListField(db.EmbeddedDocumentField("Proposition"))

@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import request
 from flask_restful import Resource
 from database.db import db
@@ -29,12 +30,10 @@ class ConceptMapEndpoint(Resource):
         return propositions
 
     def create_concept_map(self,body):
-        cm = ConceptMap()
+        cm = ConceptMap(uid=body['uid'])
         cm.concepts = self.create_concept_list(body['concepts'])
         cm.propositions = self.create_propositions_list(body['propositions'])
-        cm.uid = str(body['uid'])
-        cm.isBase = str(body['isBase'])
-        cm.dateCreated = str(body['dateCreated'])
-        cm.dateFinished = str(body['dateFinished'])
+        cm.isBase = body['isBase']
+        cm.dateCreated = datetime.now()
         return cm
         
