@@ -24,7 +24,7 @@ class AlterConceptMapEndpoint(Resource):
             concepts = ob.create_concept_list(body['concepts'])
             propositions = ob.create_propositions_list(body['propositions']) 
             ConceptMap.objects(id=id).only('concepts','propositions').first().update(set__concepts=concepts,set__propositions=propositions)
-            return {'id': str("hey")}, 200
+            return '', 204
         except Exception as e:
             print(str(e))
             return {'Error': "Failed"}, 500
