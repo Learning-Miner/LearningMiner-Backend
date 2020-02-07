@@ -4,17 +4,32 @@ from flask_restful import Resource
 from database.db import db
 from database.models.ConceptMap import ConceptMap, Concept, Proposition
 
-class ConceptMapEndpoint(Resource):
+class CreateConceptMapEndpoint(Resource):
     def post(self):
         try:
             body = request.get_json()
-            cm = self.create_concept_map(body)
+            ob = ObjectBuilder()
+            cm = ob.create_concept_map(body)
             cm.save()
             return {'id': str(cm.id)}, 201
         except Exception as e:
             print(str(e))
             return {'Error': "Failed"}, 500
+        
+class AlterConceptMapEndpoint(Resource):
+    def put(self,id):
+        try:
+            body = request.get_json()
+            ob = ObjectBuilder()
+            concepts = ob.create_concept_list(body['concepts'])
+            propositions = ob.create_propositions_list(body['propositions']) 
+            ConceptMap.objects(id=id).only('concepts','propositions').first().update(set__concepts=concepts,set__propositions=propositions)
+            return {'id': str("hey")}, 200
+        except Exception as e:
+            print(str(e))
+            return {'Error': "Failed"}, 500
 
+class ObjectBuilder():
     def create_concept_list(self,json_cpts):
         concepts = list()
         for c in json_cpts:
@@ -36,4 +51,3 @@ class ConceptMapEndpoint(Resource):
         cm.isBase = body['isBase']
         cm.dateCreated = datetime.now()
         return cm
-        
