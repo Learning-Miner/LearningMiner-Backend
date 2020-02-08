@@ -1,8 +1,7 @@
 from flask import request
 from flask_restful import Resource
 from flask_bcrypt import check_password_hash
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import jwt_required #Not necessary here
+from flask_jwt_extended import create_access_token 
 import datetime
 from mongoengine.errors import DoesNotExist
 
@@ -22,7 +21,7 @@ class LoginEndpoint(Resource):
             if not authorized:
                 return {'Error': 'Email or password invalid'}, 401
             access_token = self.create_jwt_token(user.id)
-            return {'token': access_token, 'uid': str(user.id)}, 200
+            return {'token': access_token}, 200
         except DoesNotExist:
             return {'Error': 'Email or password invalid'}, 401
         except Exception:
@@ -33,10 +32,6 @@ class LoginEndpoint(Resource):
 
     def create_jwt_token(self,usr_id):
         expires = datetime.timedelta(minutes=2)#Update time delta to something useful
-        access_token = create_access_token(identity=str(usr_id), expires_delta=expires)
+        idt = {'id': str(usr.id), 'rol': usr.rol}
+        access_token = create_access_token(identity=idt, expires_delta=expires)
         return access_token
-    
-    #Mock route to test token
-    @jwt_required
-    def get(self):
-        return {'Cool': 'You have access'}, 200
