@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import Response, request
 from flask_restful import Resource
+from mongoengine.errors import DoesNotExist, ValidationError, FieldDoesNotExist
 from database.db import db
 from database.models.ConceptMap import ConceptMap, Concept, Proposition
 
@@ -8,39 +9,66 @@ class CreateConceptMapEndpoint(Resource):
     def post(self):
         try:
             body = request.get_json()
-            ob = ObjectBuilder()
+            ob = ConceptMapBuilder()
             cm = ob.create_concept_map(body)
             cm.save()
             return {'id': str(cm.id)}, 201
+        except ValidationError:
+            return {"Error" : "Request is missing required fields"}, 400
+        except FieldDoesNotExist:
+            return {"Error": "Invalid field"}, 400
         except Exception as e:
-            print(str(e))
-            return {'Error': "Failed"}, 500
+            return {'Error': str(e)}, 500
         
 class AlterConceptMapEndpoint(Resource):
     def put(self,id):#AKA Save
         try:
             body = request.get_json()
-            ob = ObjectBuilder()
-            concepts = ob.create_concept_list(body['concepts'])
-            propositions = ob.create_propositions_list(body['propositions']) 
-            (ConceptMap.objects(id=id) 
-            .only('concepts','propositions')
-            .first() 
-            .update(set__concepts=concepts,set__propositions=propositions))
+            ob = ConceptMapBuilder()
+            if 'concepts' in body.keys() and 'propositions' in body.keys():
+                concepts = ob.create_concept_list(body['concepts'])
+                propositions = ob.create_propositions_list(body['propositions']) 
+                (ConceptMap.objects(id=id) 
+                .only('concepts','propositions')
+                .first() 
+                .update(set__concepts=concepts,set__propositions=propositions))
+            elif 'propositions' in body.keys():
+                propositions = ob.create_propositions_list(body['propositions']) 
+                (ConceptMap.objects(id=id) 
+                .only('propositions')
+                .first() 
+                .update(set__propositions=propositions))
+            else:
+                concepts = ob.create_concept_list(body['concepts'])
+                (ConceptMap.objects(id=id) 
+                .only('concepts')
+                .first() 
+                .update(set__concepts=concepts))               
             return '', 204
+        except DoesNotExist:
+            return {'Error': 'Invalid ConceptMap id'}, 404
         except Exception as e:
-            print(str(e))
-            return {'Error': "Failed"}, 500
+            return {"Error": "Something went wrong"}, 500
 
     def delete(self,id):
-        ConceptMap.objects.get(id=id).delete()
-        return '', 204
+        try:
+            ConceptMap.objects.get(id=id).delete()
+            return '', 204
+        except DoesNotExist:
+            return {'Error': 'Invalid ConceptMap id'}, 404
+        except Exception:
+            return {'Error': "Something went wrong"}, 500
 
     def get(self,id):
-        cm = ConceptMap.objects.get(id=id).to_json()
-        return Response(cm, mimetype="application/json", status=200)
+        try:
+            cm = ConceptMap.objects.get(id=id).to_json()
+            return Response(cm, mimetype="application/json", status=200)
+        except DoesNotExist:
+            return {'Error': 'Invalid ConceptMap id'}, 404
+        except Exception:
+            return {'Error': "Something went wrong"}, 500
 
-class ObjectBuilder():
+class ConceptMapBuilder():
     def create_concept_list(self,json_cpts):
         concepts = list()
         for c in json_cpts:

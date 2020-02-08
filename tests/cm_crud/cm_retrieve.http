@@ -1,2 +1,2 @@
-GET http://localhost:5000/api/cpt-map/5e3cc7880406c2aab398ddb6
+GET http://localhost:5000/api/cpt-map/5e3cd20302982e87809356cb
 Content-Type: application/json

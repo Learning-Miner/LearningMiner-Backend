@@ -4,19 +4,19 @@ Content-Type: application/json
 {
     "concepts": [
         {
-            "text": "Soccer",
+            "text": "Futbol",
             "x": 749,
             "y": 115,
             "id": "32e21895"
         },
         {
-            "text": "Matches",
+            "text": "Deporte",
             "x": 444,
             "y": 206,
             "id": "55394ba0"
         },
         {
-            "text": "United Kingdom",
+            "text": "Inglaterra",
             "x": 748,
             "y": 270,
             "id": "ccfe97df"

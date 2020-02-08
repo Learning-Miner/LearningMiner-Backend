@@ -18,13 +18,13 @@ class SignupEndpoint(Resource):
             id = user.id
             return {'id': str(id)}, 201
         except ValidationError:
-            return {"message" : "Request is missing required fields"}, 400
+            return {"Error" : "Request is missing required fields"}, 400
         except FieldDoesNotExist:
-            return {"message": "Invalid field"}, 400
+            return {"Error": "Invalid field"}, 400
         except NotUniqueError:
-            return {"message": "User with given email address already exists"}, 400
+            return {"Error": "User with given email address already exists"}, 400
         except Exception as e:
-            return {"message": "Something went wrong"}, 500
+            return {"Error": "Something went wrong"}, 500
     
     def hash_password(self, password):
         return generate_password_hash(password).decode('utf8')
