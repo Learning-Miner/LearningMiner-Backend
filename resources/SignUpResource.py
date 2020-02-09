@@ -24,7 +24,7 @@ class SignupEndpoint(Resource):
         except NotUniqueError:
             return {"Error": "User with given email address already exists"}, 400
         except Exception as e:
-            return {"Error": "Something went wrong"}, 500
+            return {"Error": str(e)}, 500
     
     def hash_password(self, password):
         return generate_password_hash(password).decode('utf8')

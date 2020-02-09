@@ -20,18 +20,18 @@ class LoginEndpoint(Resource):
             authorized = self.check_password(password,user.password)
             if not authorized:
                 return {'Error': 'Email or password invalid'}, 401
-            access_token = self.create_jwt_token(user.id)
+            access_token = self.create_jwt_token(user)
             return {'token': access_token}, 200
         except DoesNotExist:
             return {'Error': 'Email or password invalid'}, 401
-        except Exception:
-            return {'Error': 'Something went wrong'}, 500
+        except Exception as e:
+            return {'Error': str(e)}, 500
 
     def check_password(self,req_pass,usr_pass):
         return check_password_hash(usr_pass,req_pass)
 
-    def create_jwt_token(self,usr_id):
-        expires = datetime.timedelta(minutes=2)#Update time delta to something useful
+    def create_jwt_token(self,usr):
+        expires = datetime.timedelta(hours=3)
         idt = {'id': str(usr.id), 'rol': usr.rol}
         access_token = create_access_token(identity=idt, expires_delta=expires)
         return access_token

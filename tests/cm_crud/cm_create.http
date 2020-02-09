@@ -2,7 +2,6 @@ POST http://localhost:5000/api/cpt-map
 Content-Type: application/json
 
 {
-  "uid": "5e3ca096aa36a03111f4d6a9",
   "isBase": true,
     "concepts": [
         {
