@@ -1,2 +1,2 @@
-DELETE http://localhost:5000/api/cpt-map/5e3cc7880406c2aab398ddb6
+DELETE http://localhost:5000/api/cpt-map/<map-id>
 Content-Type: application/json

@@ -3,6 +3,7 @@ Content-Type: application/json
 
 {
   "isBase": true,
+  "title": "Football about",
     "concepts": [
         {
             "text": "Football",
