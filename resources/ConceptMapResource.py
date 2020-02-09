@@ -32,7 +32,18 @@ class CreateConceptMapEndpoint(Resource):
             return {"Error": "Invalid field"}, 400
         except Exception as e:
             return {'Error': str(e)}, 500
-        
+
+    @jwt_required
+    def get(self):
+        try:
+            user = get_jwt_identity()
+            qs = ConceptMap.objects(uid=user['id']).only('title','id')
+            cm_titles_ids = [(cm.title, str(cm.id)) for cm in qs]
+            if len(cm_titles_ids) == 0:
+                return {'Message': 'User does not have created maps'}, 200    
+            return cm_titles_ids, 200
+        except Exception as e:
+            return {'Error': str(e)}, 500
 class AlterConceptMapEndpoint(Resource):
     @jwt_required
     def put(self,id):#AKA Save
@@ -94,20 +105,19 @@ class ConceptMapUtils():
 
     def create_concept_map(self,body,uid):
         cm = ConceptMap(uid=uid)
-        cm.concepts = self.create_concept_list(body['concepts'])
-        cm.propositions = self.create_propositions_list(body['propositions'])
+        cm.title = body['title']
+        if 'concepts' in body.keys():
+            cm.concepts = self.create_concept_list(body['concepts'])
+        if 'propositions' in body.keys():
+            cm.propositions = self.create_propositions_list(body['propositions'])
         cm.isBase = body['isBase']
         cm.dateCreated = datetime.now()
         return cm
 
     def update_concept_map(self,body,cm):
-        if 'concepts' in body.keys() and 'propositions' in body.keys():
-            concepts = self.create_concept_list(body['concepts'])
-            propositions = self.create_propositions_list(body['propositions']) 
-            cm.update(set__concepts=concepts,set__propositions=propositions)
-        elif 'propositions' in body.keys():
-            propositions = self.create_propositions_list(body['propositions']) 
-            cm.update(set__propositions=propositions)
-        else:
+        if 'concepts' in body.keys():
             concepts = self.create_concept_list(body['concepts'])
             cm.update(set__concepts=concepts)
+        if 'propositions' in body.keys():
+            propositions = self.create_propositions_list(body['propositions']) 
+            cm.update(set__propositions=propositions)            
