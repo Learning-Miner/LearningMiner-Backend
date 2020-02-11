@@ -16,3 +16,5 @@ Set up for development
   5. Install dependencies with `pip install -r requirements.txt`
   
   6. Run app with `python app.py`
+
+Documentation for this API can be found on this [link](https://github.com/Learning-Miner/LearningMiner-Backend/wiki).
