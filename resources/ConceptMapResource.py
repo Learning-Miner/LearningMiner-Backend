@@ -78,11 +78,11 @@ class AlterConceptMapEndpoint(Resource):
     @jwt_required
     def get(self,id):
         try:
-            cm = ConceptMap.objects.get(id=id).to_json()
+            cm = ConceptMap.objects.only('concepts','propositions','isBase').get(id=id)
             user = get_jwt_identity()
             if cm.isBase and user['rol'] == 'Student':
                 return {"Error" : "Student cannot access base concept map"}, 401
-            return Response(cm, mimetype="application/json", status=200)
+            return Response(cm.to_json(), mimetype="application/json", status=200)
         except DoesNotExist:
             return {'Error': 'Invalid ConceptMap id'}, 404
         except Exception as e:
