@@ -67,18 +67,30 @@ class FilterUserConceptMapsEndpoint(Resource):
         base_ids, user_ids = set(base_cm_titles_ids.keys()), set([str(cm.baseId.id) for cm in user_cms])
         to_do_cms = base_ids - user_ids
         to_do_cms = {k:v for (k,v) in base_cm_titles_ids.items() if k in to_do_cms}
-        return to_do_cms
+        json = list()
+        for id,title in to_do_cms.items():
+            entry = {"baseId":id,"title":title}
+            json.append(entry)
+        return json
     
     def getEditMaps(self,user):
         user_cms = ConceptMap.objects(uid=user['id']).only('title','id','isDone')
         user_cm_titles_ids = [(str(cm.id), cm.title) for cm in user_cms if not cm.isDone]
         user_cm_titles_ids = dict(user_cm_titles_ids)
-        return user_cm_titles_ids
+        json = list()
+        for id,title in user_cm_titles_ids.items():
+            entry = {"id":id,"title":title}
+            json.append(entry)
+        return json
 
     def getDoneMaps(self,user):
         user_cms = ConceptMap.objects(uid=user['id'],isDone=True).only('title','id','baseId')
         user_cm_titles_ids = [(str(cm.id), cm.title, str(cm.baseId.id)) for cm in user_cms]
-        return user_cm_titles_ids
+        json = list()
+        for map_data in user_cm_titles_ids:
+            entry = {"id": map_data[0], "title": map_data[1], "baseId": map_data[2]}
+            json.append(entry)
+        return json
 
 class AlterConceptMapEndpoint(Resource):
     @jwt_required
