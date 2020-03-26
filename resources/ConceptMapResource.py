@@ -31,19 +31,67 @@ class CreateConceptMapEndpoint(Resource):
         except FieldDoesNotExist:
             return {"Error": "Invalid field"}, 400
         except Exception as e:
-            return {'Error': str(e)}, 500
+            return {'Error': str(e)}, 500     
 
+class FilterUserConceptMapsEndpoint(Resource):
     @jwt_required
-    def get(self):
+    def post(self):
         try:
+            body = request.get_json()
             user = get_jwt_identity()
-            qs = ConceptMap.objects(uid=user['id']).only('title','id')
-            cm_titles_ids = [(cm.title, str(cm.id)) for cm in qs]
-            if len(cm_titles_ids) == 0:
-                return {'Message': 'User does not have created maps'}, 200    
-            return cm_titles_ids, 200
+            if body['query'] == 'to-do':
+                to_do_cms = self.getToDoMaps(user)
+                if len(to_do_cms) == 0:
+                    return {'Message': 'User does not have to do maps'}, 200
+                else:
+                    return to_do_cms
+            if body['query'] == 'edit':
+                edit_maps = self.getEditMaps(user)
+                if len(edit_maps) == 0:
+                    return {'Message': 'User does not have created maps'}, 200
+                else:
+                    return edit_maps
+            if body['query'] == 'done':
+                done_maps = self.getDoneMaps(user)
+                if len(done_maps) == 0:
+                    return {'Message': 'User does not have done maps'}, 200
+                else:
+                    return done_maps
         except Exception as e:
             return {'Error': str(e)}, 500
+    def getToDoMaps(self,user):
+        base_cms = ConceptMap.objects(isBase=True).only('title','id')
+        base_cm_titles_ids = [(str(cm.id), cm.title) for cm in base_cms]
+        base_cm_titles_ids = dict(base_cm_titles_ids)
+        user_cms = ConceptMap.objects(uid=user['id']).only('title','id','baseId')
+        base_ids, user_ids = set(base_cm_titles_ids.keys()), set([str(cm.baseId.id) for cm in user_cms])
+        to_do_cms = base_ids - user_ids
+        to_do_cms = {k:v for (k,v) in base_cm_titles_ids.items() if k in to_do_cms}
+        json = list()
+        for id,title in to_do_cms.items():
+            entry = {"baseId":id,"title":title}
+            json.append(entry)
+        return json
+    
+    def getEditMaps(self,user):
+        user_cms = ConceptMap.objects(uid=user['id']).only('title','id','isDone')
+        user_cm_titles_ids = [(str(cm.id), cm.title) for cm in user_cms if not cm.isDone]
+        user_cm_titles_ids = dict(user_cm_titles_ids)
+        json = list()
+        for id,title in user_cm_titles_ids.items():
+            entry = {"id":id,"title":title}
+            json.append(entry)
+        return json
+
+    def getDoneMaps(self,user):
+        user_cms = ConceptMap.objects(uid=user['id'],isDone=True).only('title','id','baseId')
+        user_cm_titles_ids = [(str(cm.id), cm.title, str(cm.baseId.id)) for cm in user_cms]
+        json = list()
+        for map_data in user_cm_titles_ids:
+            entry = {"id": map_data[0], "title": map_data[1], "baseId": map_data[2]}
+            json.append(entry)
+        return json
+
 class AlterConceptMapEndpoint(Resource):
     @jwt_required
     def put(self,id):#AKA Save

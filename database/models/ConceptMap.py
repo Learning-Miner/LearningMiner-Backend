@@ -13,9 +13,11 @@ class Proposition(db.EmbeddedDocument):
 
 class ConceptMap(db.Document):
     uid = db.ReferenceField('User')
+    baseId = db.ReferenceField('ConceptMap')
     title = db.StringField(required=True)
     isBase = db.BooleanField(required=True)
     dateCreated = db.DateTimeField(required=True)
     dateFinished = db.DateTimeField()
+    isDone = db.BooleanField()
     concepts = db.ListField(db.EmbeddedDocumentField("Concept"))
     propositions = db.ListField(db.EmbeddedDocumentField("Proposition"))
