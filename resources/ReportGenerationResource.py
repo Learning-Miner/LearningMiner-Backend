@@ -3,30 +3,35 @@ from flask_restful import Resource
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from database.db import db
 from database.models.ConceptMap import ConceptMap
-
+from database.models.Report import StudentReport
+from .Analytics import Analytics
 class CreateReportsEndpoint(Resource):
     @jwt_required
     def get(self,baseId):
         students_cms = ConceptMap.objects(baseId=baseId)
         base_cm = ConceptMap.objects(id=baseId)
-        self.advance_ind_reports(students_cms,base_cm)
-        self.advance_grp_report(students_cms,base_cm)
-        self.finish_ind_rerpots(students_cms,base_cm)
-        group_report = self.finish_grp_report(students_cms,base_cm)
-        strt = "Base "+str(len(base_cm))+" Stds "+str(len(students_cms))
-        return {"mesage":strt}
+        analytics = Analytics(students_cms.to_json(),base_cm.to_json())
+        self.advance_ind_reports(analytics)
+        self.advance_grp_report(analytics)
+        self.finish_ind_rerpots(analytics)
+        group_report, grp_report = self.finish_grp_report(analytics)
+        return {"std":group_report,"base":grp_report}
         
-    def advance_ind_reports(self,students_cms,base_cm):
-        pass
+    def advance_ind_reports(self,analytics):
+        ind_reports = analytics.advance_ind_reports()
+        for ind_report in ind_reports:
+            report = StudentReport(**ind_report)
+            report.save()
+
     
-    def advance_grp_report(self,students_cms,base_cm):
-        pass
+    def advance_grp_report(self,analytics):
+        analytics.advance_grp_report()
 
-    def finish_ind_rerpots(self,students_cms,base_cm):
-        pass
+    def finish_ind_rerpots(self,analytics):
+        analytics.finish_ind_rerpots()
 
-    def finish_grp_report(self,students_cms,base_cm):
-        return "Group Report"
+    def finish_grp_report(self,analytics):
+        return analytics.finish_grp_report()
 
 
 class RetrieveReportsEndpoint(Resource):
