@@ -8,31 +8,20 @@ from .Analytics import Analytics
 class CreateReportsEndpoint(Resource):
     @jwt_required
     def get(self,baseId):
+        user = get_jwt_identity()
+        if user['rol'] == 'Student':
+            return {"Error" : "Student cannot create reports"}, 401
         students_cms = ConceptMap.objects(baseId=baseId)
         base_cm = ConceptMap.objects(id=baseId)
         analytics = Analytics(students_cms.to_json(),base_cm.to_json())
-        self.advance_ind_reports(analytics)
-        self.advance_grp_report(analytics)
-        self.finish_ind_rerpots(analytics)
-        group_report, grp_report = self.finish_grp_report(analytics)
-        return {"std":group_report,"base":grp_report}
+        ind_reports = analytics.generate_reports()
+        self.save_ind_reports(ind_reports)
+        return ind_reports
         
-    def advance_ind_reports(self,analytics):
-        ind_reports = analytics.advance_ind_reports()
+    def save_ind_reports(self,ind_reports):
         for ind_report in ind_reports:
             report = StudentReport(**ind_report)
             report.save()
-
-    
-    def advance_grp_report(self,analytics):
-        analytics.advance_grp_report()
-
-    def finish_ind_rerpots(self,analytics):
-        analytics.finish_ind_rerpots()
-
-    def finish_grp_report(self,analytics):
-        return analytics.finish_grp_report()
-
 
 class RetrieveReportsEndpoint(Resource):
     @jwt_required
