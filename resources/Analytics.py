@@ -17,12 +17,8 @@ class Analytics():
     
     def generate_reports(self):
         ind_reports = self.advance_ind_reports()
-        kwt, cdt  = self.advance_grp_report()
-        kwt = self.serialize_keywords_df(kwt,3)
-        pprint(kwt)
-        cdt = self.serialize_topic_doc_df(cdt)
-        pprint(cdt)
-        return ind_reports
+        group_report = self.advance_grp_report()
+        return ind_reports, group_report
         #some method to add dominant topic to each ind_reports
         #some method that contructs group_report json(ind_reports) 
         #return ind_reports, group_report both as json
@@ -33,7 +29,12 @@ class Analytics():
         
     def advance_grp_report(self):
         kwt, cdt = self.grp_analytics.advance_grp_report()
-        return kwt, cdt
+        group_report = dict()
+        kwt = self.serialize_keywords_df(kwt,3)
+        cdt = self.serialize_topic_doc_df(cdt)
+        group_report['topic_keywords'] = kwt
+        group_report['topic_doc_count'] = cdt
+        return group_report
 
     def finish_ind_rerpots(self):
         pass
