@@ -4,7 +4,9 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from database.db import db
 from database.models.ConceptMap import ConceptMap
 from database.models.Report import StudentReport, Topic, TopicDocumentCount, GroupReport
+from database.models.User import User
 from .Analytics import Analytics
+import json
 
 class CreateReportsEndpoint(Resource):
     @jwt_required
@@ -48,11 +50,37 @@ class RetrieveReportsEndpoint(Resource):
     @jwt_required
     def post(self,baseId):
         body = request.get_json()
+        user = get_jwt_identity()
         if body['query'] == 'group':
-            return {"Mesage":"Group Report"}
+            grp_report = GroupReport.objects(baseId=baseId)
+            return json.loads(grp_report.to_json()), 200
         if body['query'] == 'student':
-            stu_id = body['student_id']
-            return {"Mesage":"Student " + stu_id + " report"}
-        
+            std_id = body['student_id']
+            if user['rol'] == 'Teacher':
+                std_report = StudentReport.objects(baseId=baseId,uid=std_id)
+                return json.loads(std_report.to_json()), 200
+            elif user['rol'] == 'Student' and user['id'] == std_id:
+                std_report = StudentReport.objects(baseId=baseId,uid=std_id)
+                return json.loads(std_report.to_json()), 200
+            else:
+                return {"Error" : "Student cannot access this student report"}, 401
+            
+        return {"Message": "Error"}, 500
+            
+    
+    @jwt_required
+    def get(self,baseId):
+        user = get_jwt_identity()
+        if user['rol'] == 'Student':
+            return {"Error" : "Student cannot access student's reports"}, 401
+        std_reports = StudentReport.objects(baseId=baseId).only("uid")
+        names_reports = list()
+        for report_data in std_reports:
+            std = User.objects.only("name","lastname").get(id=report_data.uid.id)
+            name = std.name
+            lastname = std.lastname
+            entry = {"std_name": f'{name} {lastname}', "std_id":str(std.id)}
+            names_reports.append(entry)
+        return names_reports, 200
 
 
