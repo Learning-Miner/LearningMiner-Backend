@@ -2,7 +2,6 @@ import json
 from .analytics.StudentAnalytics import StudentAnalytics
 from .analytics.GroupAnalytics import GroupAnalytics
 from .analytics.TextAnalytics import TextAnalytics
-from pprint import pprint
 
 class Analytics():
     def __init__(self, students_cms, base_cm):
@@ -16,6 +15,7 @@ class Analytics():
         ind_reports = self.advance_ind_reports()
         group_report = self.advance_grp_report()
         ind_reports = self.finish_ind_reports(ind_reports)
+        group_report = self.finish_grp_report(group_report,ind_reports)
         return ind_reports, group_report
 
     def advance_ind_reports(self):
@@ -34,8 +34,8 @@ class Analytics():
     def finish_ind_reports(self,ind_reports):
         return self.std_analytics.finish_ind_reports(ind_reports)
 
-    def finish_grp_report(self):
-        return {"Message":"GR"}
+    def finish_grp_report(self,group_report,ind_reports):
+        return self.grp_analytics.finish_grp_report(group_report,ind_reports)
 
     def serialize_keywords_df(self,df,num_topics):
         json = {'topics': list()}

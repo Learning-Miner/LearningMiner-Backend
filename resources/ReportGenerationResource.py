@@ -5,6 +5,7 @@ from database.db import db
 from database.models.ConceptMap import ConceptMap
 from database.models.Report import StudentReport, Topic, TopicDocumentCount, GroupReport
 from .Analytics import Analytics
+
 class CreateReportsEndpoint(Resource):
     @jwt_required
     def get(self,baseId):
@@ -27,9 +28,12 @@ class CreateReportsEndpoint(Resource):
     def save_group_report(self,group_report,baseId):
         gp = GroupReport(baseId=baseId)
         topics = self.create_topic_list(group_report['topic_keywords'])
-        gp.topics = topics
         topic_doc_count = TopicDocumentCount(**group_report['topic_doc_count'])
         gp.topic_doc_count = topic_doc_count
+        gp.topics = topics
+        gp.similarity_values = group_report['similarity_values']
+        gp.time_used_values = group_report['time_used_values']
+        gp.num_concepts_values = group_report['num_concepts_values']
         gp.save()
         return str(gp.id)
 

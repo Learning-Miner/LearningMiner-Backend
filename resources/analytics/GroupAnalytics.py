@@ -13,4 +13,17 @@ class GroupAnalytics():
         cdt = self.txt_analytics.count_docs_topic(docs)# Should return json
         return kwt, cdt
     
-    
+    def finish_grp_report(self,group_report,ind_reports):
+        similarity_values = []
+        num_concepts_values = []
+        time_used_values = []
+        for ind_report in ind_reports:
+            similarity_values.append(ind_report['similarity'])
+            num_concepts_values.append(ind_report['num_concepts'])
+            time_used_values.append(ind_report['time_used'])
+
+        group_report['similarity_values'] = similarity_values
+        group_report['num_concepts_values'] = num_concepts_values
+        group_report['time_used_values'] = time_used_values
+
+        return group_report
