@@ -2,12 +2,16 @@ from ..db import db
 from .User import User
 from .ConceptMap import ConceptMap
 
+class TopicDistribution(db.EmbeddedDocument):
+    importances = db.ListField(db.FloatField())
+    topic = db.ListField(db.IntField())
+
 class StudentReport(db.Document):
     uid = db.ReferenceField('User')
     baseId = db.ReferenceField('ConceptMap')
     similarity = db.FloatField()
     num_concepts = db.IntField()
-    dominant_topic = db.StringField()
+    topic_distribution = db.EmbeddedDocumentField("TopicDistribution")
     time_used = db.FloatField()
 
 class Topic(db.EmbeddedDocument):

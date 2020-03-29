@@ -11,6 +11,19 @@ class TextAnalytics():
         self.vectorizer = None
         self.features = None
 
+    def maps_as_docs(self,students_cms):
+        docs = list()
+        for std_cm in students_cms:
+            text = self.get_cm_string(std_cm)
+            docs.append(text)
+        return docs
+
+    def get_cm_string(self,std_cm):
+        text = ""
+        for c in std_cm['concepts']:
+            text += " " + c['text'] + " "
+        return text
+
     def is_valid_token(self,token):
         ret = True
         if token.is_stop:
@@ -81,3 +94,13 @@ class TextAnalytics():
             if ele == target:
                 count += 1
         return count
+
+    def topics_per_document(self,cm):
+        doc= self.get_cm_string(cm)
+        importances = list()
+        topic_ids = list()
+        topics = self.model.transform(self.vectorizer.transform([doc]))[0]
+        for topic_id, topic_impo in enumerate(topics):
+            importances.append(topic_impo)
+            topic_ids.append(topic_id)
+        return topic_ids, importances

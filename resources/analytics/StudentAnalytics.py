@@ -31,3 +31,9 @@ class StudentAnalytics():
         dif = dateFinished - dateCreated
         time_used = divmod(dif.seconds, 60)[0]
         return time_used
+
+    def finish_ind_reports(self,ind_reports):
+        for idx,ind_report in enumerate(ind_reports):
+            topic_ids, importances = self.txt_analytics.topics_per_document(self.students_cms[idx])
+            ind_reports[idx]['topic_distribution'] = {"topic":topic_ids,"importances":importances}
+        return ind_reports

@@ -2,6 +2,7 @@ import json
 from .analytics.StudentAnalytics import StudentAnalytics
 from .analytics.GroupAnalytics import GroupAnalytics
 from .analytics.TextAnalytics import TextAnalytics
+from pprint import pprint
 
 class Analytics():
     def __init__(self, students_cms, base_cm):
@@ -14,10 +15,8 @@ class Analytics():
     def generate_reports(self):
         ind_reports = self.advance_ind_reports()
         group_report = self.advance_grp_report()
+        ind_reports = self.finish_ind_reports(ind_reports)
         return ind_reports, group_report
-        #some method to add dominant topic to each ind_reports
-        #some method that contructs group_report json(ind_reports) 
-        #return ind_reports, group_report both as json
 
     def advance_ind_reports(self):
         ind_reports = self.std_analytics.advance_ind_reports()
@@ -32,8 +31,8 @@ class Analytics():
         group_report['topic_doc_count'] = cdt
         return group_report
 
-    def finish_ind_rerpots(self):
-        pass
+    def finish_ind_reports(self,ind_reports):
+        return self.std_analytics.finish_ind_reports(ind_reports)
 
     def finish_grp_report(self):
         return {"Message":"GR"}
