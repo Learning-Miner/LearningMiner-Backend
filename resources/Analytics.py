@@ -55,3 +55,7 @@ class Analytics():
             'student_count': df['student_count'].to_list()}
         )
         return json
+
+    def generate_group_maps(self,key_concepts):
+        maps = self.grp_analytics.generate_group_map(key_concepts)
+        return maps
