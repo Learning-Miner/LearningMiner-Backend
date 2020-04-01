@@ -116,7 +116,7 @@ class TextAnalytics():
             while i<len(v['text']):
                 j = i + 1
                 while j<len(v['text']):
-                    if is_similar(nlp(v['text'][i]),nlp(v['text'][j]),0.7):
+                    if self.is_similar(self.nlp(v['text'][i]),self.nlp(v['text'][j]),0.7):
                         del v['text'][j]
                         del v['propositions'][j]
                     j+=1
@@ -125,7 +125,7 @@ class TextAnalytics():
         return group_map
 
     def preprocess_sentence(self,sentence):
-        return " ".join([token.lemma_ for token in nlp(sentence) if self.is_valid_token(token)]).lower()
+        return " ".join([token.lemma_ for token in self.nlp(sentence) if self.is_valid_token(token)]).lower()
 
     def process_map_for_group_map(self,group_map,cm):
         concepts = dict()
@@ -134,13 +134,13 @@ class TextAnalytics():
         for kc in group_map.keys():
             text = list()
             prop = list()
-            key_concept = nlp(kc)
+            key_concept = self.nlp(kc)
             for c in concepts.values():
-                c = nlp(preprocess_sentence(c))
-                if is_similar(key_concept,c,0.89):
+                c = self.nlp(self.preprocess_sentence(c))
+                if self.is_similar(key_concept,c,0.89):
                     for pro in cm['propositions']:
-                        pro_txt = nlp(preprocess_sentence(concepts[pro['from']]))
-                        if is_similar(pro_txt,c,0.89):
+                        pro_txt = self.nlp(self.preprocess_sentence(concepts[pro['frm']]))
+                        if self.is_similar(pro_txt,c,0.89):
                             prop.append(pro['text'])
                             text.append(concepts[pro['to']])
             group_map[kc]["propositions"] = group_map[kc]["propositions"] + prop
@@ -149,8 +149,9 @@ class TextAnalytics():
 
 
     def generate_group_map(self,key_concepts,students_cms):
+        print(key_concepts)
         for i,c in enumerate(key_concepts):
-            key_concepts[i] = preprocess_sentence(c)
+            key_concepts[i] = self.preprocess_sentence(c)
         
         group_map = dict()
         
@@ -158,7 +159,7 @@ class TextAnalytics():
             group_map[kc] = {"propositions": list(), "text": list()}
 
         for cm in students_cms:
-            group_map = process_map_for_group_map(group_map,cm)    
+            group_map = self.process_map_for_group_map(group_map,cm)    
             
-        group_map = clean_group_map(group_map)
+        group_map = self.clean_group_map(group_map)
         return group_map         
