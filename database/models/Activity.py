@@ -9,4 +9,4 @@ class Activity(db.Document):
     dateClose = db.DateTimeField(required=True)
     text = db.StringField(required=True)
     baseId = db.ReferenceField('ConceptMap')
-    keywords = db.ListField(db.StringField())
+    key_concepts = db.ListField(db.StringField())

@@ -16,6 +16,7 @@ class ConceptMap(db.Document):
     baseId = db.ReferenceField('ConceptMap')
     title = db.StringField(required=True)
     isBase = db.BooleanField(required=True)
+    isGroup = db.BooleanField()
     dateCreated = db.DateTimeField(required=True)
     dateFinished = db.DateTimeField()
     isDone = db.BooleanField()
