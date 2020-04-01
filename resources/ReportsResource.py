@@ -8,6 +8,9 @@ from database.models.User import User
 from .Analytics import Analytics
 import json
 
+key_concepts = ["machine learning", "unsupervised learning", "supervised learning",
+                "applications", "deep learning" ,"reinforcement learning"]
+
 class CreateReportsEndpoint(Resource):
     @jwt_required
     def get(self,baseId):
@@ -20,6 +23,7 @@ class CreateReportsEndpoint(Resource):
         ind_reports, group_report = analytics.generate_reports()
         self.save_ind_reports(ind_reports)
         gp_id = self.save_group_report(group_report,baseId)
+        gp_map_id = analytics.generate_group_map(key_concepts)
         return {"Group report id":gp_id}
         
     def save_ind_reports(self,ind_reports):

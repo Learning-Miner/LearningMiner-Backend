@@ -31,3 +31,4 @@ class GroupReport(db.Document):
     time_used_values = db.ListField(db.FloatField())
     topics = db.ListField(db.EmbeddedDocumentField("Topic"))
     topic_doc_count = db.EmbeddedDocumentField("TopicDocumentCount")
+    group_maps = db.ListField(db.ReferenceField('ConceptMap'))
