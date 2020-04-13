@@ -99,7 +99,7 @@ class RetrieveReportsEndpoint(Resource):
     
     @jwt_required
     def get(self,baseId):
-        try
+        try:
             user = get_jwt_identity()
             if user['rol'] == 'Student':
                 return {"Error" : "Student cannot access student's reports"}, 401
