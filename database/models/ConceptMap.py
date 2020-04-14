@@ -14,8 +14,9 @@ class Proposition(db.EmbeddedDocument):
 class ConceptMap(db.Document):
     uid = db.ReferenceField('User')
     baseId = db.ReferenceField('ConceptMap')
-    title = db.StringField(required=True)
+    title = db.StringField()
     isBase = db.BooleanField(required=True)
+    isGroup = db.BooleanField()
     dateCreated = db.DateTimeField(required=True)
     dateFinished = db.DateTimeField()
     isDone = db.BooleanField()
