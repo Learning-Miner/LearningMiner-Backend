@@ -33,6 +33,8 @@ class TextAnalytics():
             ret = False
         if token.pos_ == 'SYM':
             ret = False
+        if token.pos_ == 'PUNCT':
+            ret = False
         return ret
        
     def preprocess(self,word):
