@@ -1,8 +1,11 @@
-from numpy import argmax, append
+from numpy import argmax, append, array
 from pandas import DataFrame
 import spacy
+import pytextrank
 from sklearn.decomposition import NMF
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.cluster import KMeans
+from collections import Counter, defaultdict
 
 class TextAnalytics():
     def __init__(self):
@@ -29,6 +32,8 @@ class TextAnalytics():
         if token.is_stop:
             ret = False
         if token.pos_ == 'SYM':
+            ret = False
+        if token.pos_ == 'PUNCT':
             ret = False
         return ret
        
@@ -163,3 +168,55 @@ class TextAnalytics():
             
         group_map = self.clean_group_map(group_map)
         return group_map         
+    
+    def get_key_phrases(self,doc,top_n):
+        aux_phrases = []
+
+        aux_phrases.append(self.filter_phrases_by_num_words(2,doc._.phrases))
+        aux_phrases.append(self.filter_phrases_by_num_words(3,doc._.phrases))
+        aux_phrases.append(self.filter_phrases_by_num_words(4,doc._.phrases))
+        
+        for idx,phrases in enumerate(aux_phrases):
+            if len(phrases) > top_n:
+                aux_phrases[idx] = phrases[:top_n]
+        
+        return aux_phrases
+
+    def filter_phrases_by_num_words(self,num_words,phrases):
+        key_phrases = [self.nlp(p.text) for p in phrases if len(self.nlp(p.text)) == num_words and p.rank > 0.05 ]
+        return key_phrases
+
+    def cluster_texts(self,docs,num_clusters):
+        features, vectorizer = self.feature_extraction(docs)
+        km_model = KMeans(n_clusters=num_clusters)
+        km_model.fit(features)
+        clustering = defaultdict(list)
+    
+        for idx, label in enumerate(km_model.labels_):
+            clustering[label].append(idx)
+    
+        return clustering
+
+    def process_key_phrases(self,aux_key):
+        key_phrases = []
+        for phrases in aux_key:
+            key_phrases = key_phrases + phrases
+        return key_phrases
+
+    def generate_base_map(self,text):
+        tr = pytextrank.TextRank()
+        self.nlp.add_pipe(tr.PipelineComponent, name='textrank', last=True)
+        doc = self.nlp(text.lower())
+        aux_key = self.get_key_phrases(doc,10)
+        key_phrases = self.process_key_phrases(aux_key)
+        key = [str(word) for word in key_phrases]
+
+        clus = self.cluster_texts(key,int(len(key[0])/2))
+        key = array(key)
+
+        base_map = dict()
+        for label, indexs in clus.items():
+            if len(key[indexs].tolist()) > 1:
+                base_map[key[indexs][0]] = key[indexs].tolist()[1:]
+                
+        return base_map
