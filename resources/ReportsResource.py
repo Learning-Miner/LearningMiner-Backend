@@ -84,12 +84,12 @@ class RetrieveReportsEndpoint(Resource):
                 grp_report = GroupReport.objects(baseId=baseId)
                 return json.loads(grp_report.to_json()), 200
             if body['query'] == 'student':
-                std_id = body['student_id']
                 if user['rol'] == 'Teacher':
+                    std_id = body['student_id']
                     std_report = StudentReport.objects(baseId=baseId,uid=std_id)
                     return json.loads(std_report.to_json()), 200
-                elif user['rol'] == 'Student' and user['id'] == std_id:
-                    std_report = StudentReport.objects(baseId=baseId,uid=std_id)
+                elif user['rol'] == 'Student':
+                    std_report = StudentReport.objects(baseId=baseId,user['id'])
                     return json.loads(std_report.to_json()), 200
                 else:
                     return {"Error" : "Student cannot access this student report"}, 401
