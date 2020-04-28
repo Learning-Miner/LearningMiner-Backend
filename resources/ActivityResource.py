@@ -6,7 +6,7 @@ from database.models.Activity import Activity
 from .analytics.ActivityTextAnalytics import ActivityTextAnalytics
 from .ConceptMapResource import ConceptMapUtils
 
-class CreateActivityResource(Resource):
+class CreateActivityEndpoint(Resource):
     @jwt_required
     def post(self):
         try:
@@ -40,7 +40,7 @@ class CreateActivityResource(Resource):
         base_map_id = base_map.save()
         return key_concepts, base_map_id
 
-class FilterActivityResource(Resource):
+class FilterActivityEndpoint(Resource):
     @jwt_required
     def post(self):
         user = get_jwt_identity()
@@ -67,3 +67,22 @@ class FilterActivityResource(Resource):
         closed_acts = Activity.objects(uid=user['id'],isClosed=True).only('title','baseId')
         ret_acts = [{"Title":act.title,"actId":str(act.id),"baseId":str(act.baseId.id)} for act in closed_acts]
         return ret_acts
+
+class EditActivityEndpoint(Resource):
+    @jwt_required
+    def put(self,actId):
+        user = get_jwt_identity()
+        body = request.get_json()
+        act = Activity.objects.get(id=actId)
+        if str(act.uid.id) == user['id']:
+            if 'title' in body.keys():
+                act.update(set__title=body['title'])
+            if 'dateClose' in body.keys():
+                act.update(set__dateClose=body['dateClose'])
+            if 'isClosed' in body.keys():
+                act.update(set__isClose=body['isClose'])
+            if 'key_concepts' in body.keys():
+                act.update(set__key_concepts=body['key_concepts'])
+            return '', 204
+        else:
+            return {'Message': 'User is not authorized to edit this activity'}, 401
