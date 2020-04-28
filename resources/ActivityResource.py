@@ -1,10 +1,11 @@
 from datetime import datetime
-from flask import Response, request
+from flask import Response, request, jsonify
 from flask_restful import Resource
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from database.models.Activity import Activity
 from .analytics.ActivityTextAnalytics import ActivityTextAnalytics
 from .ConceptMapResource import ConceptMapUtils
+import datetime
 
 class CreateActivityEndpoint(Resource):
     @jwt_required
@@ -84,5 +85,20 @@ class EditActivityEndpoint(Resource):
             if 'key_concepts' in body.keys():
                 act.update(set__key_concepts=body['key_concepts'])
             return '', 204
+        else:
+            return {'Message': 'User is not authorized to edit this activity'}, 401
+    
+    @jwt_required
+    def get(self,actId):
+        user = get_jwt_identity()
+        act = Activity.objects.only('title','key_concepts','dateClose','baseId','uid').get(id=actId)
+        if str(act.uid.id) == user['id']:
+            print(act.dateClose,type(act.dateClose))
+            json = dict()
+            json["Title"] = act.title
+            json["dateClose"] = str(act.dateClose)
+            json["baseId"] = str(act.baseId.id)
+            json["key_concepts"] = list(act.key_concepts)
+            return json, 200
         else:
             return {'Message': 'User is not authorized to edit this activity'}, 401

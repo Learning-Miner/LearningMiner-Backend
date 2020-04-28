@@ -13,4 +13,4 @@ def initialize_routes(api):
     api.add_resource(RetrieveReportsEndpoint, '/api/reports/retrieve/<baseId>')
     api.add_resource(CreateActivityEndpoint, '/api/activity/create')
     api.add_resource(FilterActivityEndpoint, '/api/activity/filter')
-    api.add_resource(EditActivityEndpoint, '/api/activity/edit/<actId>')
+    api.add_resource(EditActivityEndpoint, '/api/activity/<actId>')
