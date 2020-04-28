@@ -30,6 +30,7 @@ class CreateActivityResource(Resource):
         act.title = body['title']
         act.isClosed = False
         act.key_concepts = key_concepts
+        act.baseId = base_map_id
         return act
 
     def process_activity_text(self,analytics,uid):
@@ -59,5 +60,10 @@ class FilterActivityResource(Resource):
 
     def getOpenActivities(self,user):
         open_acts = Activity.objects(uid=user['id'],isClosed=False).only('title','baseId')
-        ret_acts = [{"Title":act.title,"Id":str(act.id)} for act in open_acts]
+        ret_acts = [{"Title":act.title,"actId":str(act.id),"baseId":str(act.baseId.id)} for act in open_acts]
+        return ret_acts
+
+    def getClosedActivities(self,user):
+        closed_acts = Activity.objects(uid=user['id'],isClosed=True).only('title','baseId')
+        ret_acts = [{"Title":act.title,"actId":str(act.id),"baseId":str(act.baseId.id)} for act in closed_acts]
         return ret_acts
