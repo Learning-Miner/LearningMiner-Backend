@@ -10,3 +10,4 @@ class Activity(db.Document):
     text = db.StringField(required=True)
     baseId = db.ReferenceField('ConceptMap')
     key_concepts = db.ListField(db.StringField())
+    isClosed = db.BooleanField()
