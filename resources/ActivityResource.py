@@ -44,20 +44,23 @@ class CreateActivityEndpoint(Resource):
 class FilterActivityEndpoint(Resource):
     @jwt_required
     def post(self):
-        user = get_jwt_identity()
-        body = request.get_json()
-        if body['query'] == 'open':
-            open_acts = self.getOpenActivities(user)
-            if len(open_acts) == 0:
-                return {'Message': 'User does not have open activities'}, 200
-            else:
-                return open_acts
-        if body['query'] == 'closed':
-            closed_acts = self.getClosedActivities(user)
-            if len(closed_acts) == 0:
-                return {'Message': 'User does not have closed activities'}, 200
-            else:
-                return closed_acts
+        try:
+            user = get_jwt_identity()
+            body = request.get_json()
+            if body['query'] == 'open':
+                open_acts = self.getOpenActivities(user)
+                if len(open_acts) == 0:
+                    return {'Message': 'User does not have open activities'}, 200
+                else:
+                    return open_acts
+            if body['query'] == 'closed':
+                closed_acts = self.getClosedActivities(user)
+                if len(closed_acts) == 0:
+                    return {'Message': 'User does not have closed activities'}, 200
+                else:
+                    return closed_acts
+        except Exception as e:
+            return {'Error': str(e)}, 500
 
     def getOpenActivities(self,user):
         open_acts = Activity.objects(uid=user['id'],isClosed=False).only('title','baseId')
@@ -72,33 +75,39 @@ class FilterActivityEndpoint(Resource):
 class EditActivityEndpoint(Resource):
     @jwt_required
     def put(self,actId):
-        user = get_jwt_identity()
-        body = request.get_json()
-        act = Activity.objects.get(id=actId)
-        if str(act.uid.id) == user['id']:
-            if 'title' in body.keys():
-                act.update(set__title=body['title'])
-            if 'dateClose' in body.keys():
-                act.update(set__dateClose=body['dateClose'])
-            if 'isClosed' in body.keys():
-                act.update(set__isClose=body['isClose'])
-            if 'key_concepts' in body.keys():
-                act.update(set__key_concepts=body['key_concepts'])
-            return '', 204
-        else:
-            return {'Message': 'User is not authorized to edit this activity'}, 401
+        try:
+            user = get_jwt_identity()
+            body = request.get_json()
+            act = Activity.objects.get(id=actId)
+            if str(act.uid.id) == user['id']:
+                if 'title' in body.keys():
+                    act.update(set__title=body['title'])
+                if 'dateClose' in body.keys():
+                    act.update(set__dateClose=body['dateClose'])
+                if 'isClosed' in body.keys():
+                    act.update(set__isClose=body['isClose'])
+                if 'key_concepts' in body.keys():
+                    act.update(set__key_concepts=body['key_concepts'])
+                return '', 204
+            else:
+                return {'Message': 'User is not authorized to edit this activity'}, 401
+        except Exception as e:
+           return {'Error': str(e)}, 500
     
     @jwt_required
     def get(self,actId):
-        user = get_jwt_identity()
-        act = Activity.objects.only('title','key_concepts','dateClose','baseId','uid').get(id=actId)
-        if str(act.uid.id) == user['id']:
-            print(act.dateClose,type(act.dateClose))
-            json = dict()
-            json["Title"] = act.title
-            json["dateClose"] = str(act.dateClose)
-            json["baseId"] = str(act.baseId.id)
-            json["key_concepts"] = list(act.key_concepts)
-            return json, 200
-        else:
-            return {'Message': 'User is not authorized to edit this activity'}, 401
+        try:
+            user = get_jwt_identity()
+            act = Activity.objects.only('title','key_concepts','dateClose','baseId','uid').get(id=actId)
+            if str(act.uid.id) == user['id']:
+                print(act.dateClose,type(act.dateClose))
+                json = dict()
+                json["Title"] = act.title
+                json["dateClose"] = str(act.dateClose)
+                json["baseId"] = str(act.baseId.id)
+                json["key_concepts"] = list(act.key_concepts)
+                return json, 200
+            else:
+                return {'Message': 'User is not authorized to edit this activity'}, 401
+        except Exception as e:
+           return {'Error': str(e)}, 500
