@@ -26,7 +26,8 @@ class CreateConceptMapEndpoint(Resource):
             cm = ob.create_concept_map(body,user['id'])
             cm.save()
             return {'id': str(cm.id)}, 201
-        except ValidationError:
+        except ValidationError as e:
+            print(str(e))
             return {"Error" : "Request is missing required fields"}, 400
         except FieldDoesNotExist:
             return {"Error": "Invalid field"}, 400
@@ -159,7 +160,12 @@ class ConceptMapUtils():
         if 'propositions' in body.keys():
             cm.propositions = self.create_propositions_list(body['propositions'])
         cm.isBase = body['isBase']
+        if 'baseId' in body.keys():
+            ref = ConceptMap.objects.only('id').get(id=body['baseId'])
+            cm.baseId = ref.id
         cm.dateCreated = datetime.now()
+        if 'isDone' in body.keys():
+            cm.isDone = body['isDone']
         return cm
 
     def update_concept_map(self,body,cm):
