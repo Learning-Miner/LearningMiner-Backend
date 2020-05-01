@@ -1,8 +1,8 @@
-from .SignUpResource import SignupEndpoint
-from .LogInResource import LoginEndpoint
-from .ConceptMapResource import CreateConceptMapEndpoint, AlterConceptMapEndpoint, FilterUserConceptMapsEndpoint
-from .ReportsResource import CreateReportsEndpoint, RetrieveReportsEndpoint
-from .ActivityResource import CreateActivityResource
+from resources.auth.SignUpResource import SignupEndpoint
+from resources.auth.LogInResource import LoginEndpoint
+from resources.concept_map.ConceptMapResource import CreateConceptMapEndpoint, AlterConceptMapEndpoint, FilterUserConceptMapsEndpoint
+from resources.reports.ReportsResource import CreateReportsEndpoint, RetrieveReportsEndpoint
+from resources.activity.ActivityResource import CreateActivityResource
 def initialize_routes(api):   
     api.add_resource(LoginEndpoint, '/api/login')
     api.add_resource(SignupEndpoint, '/api/signup')

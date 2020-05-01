@@ -1,6 +1,12 @@
 venv/
 __pycache__/
 .vscode/
+.idea/
 resources/__pycache__/
+resources/activity/__pycache__/
+resources/analytics/__pycache__/
+resources/auth/__pycache__/
+resources/concept_map/__pycache__/
+resources/reports/__pycache__/
 database/__pycache__/
 database/models/__pycache__/

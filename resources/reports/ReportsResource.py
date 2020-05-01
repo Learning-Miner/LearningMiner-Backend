@@ -1,13 +1,12 @@
-from flask import Response, request
+from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from database.db import db
 from database.models.ConceptMap import ConceptMap
 from database.models.Report import StudentReport, Topic, TopicDocumentCount, GroupReport
 from database.models.User import User
 from database.models.Activity import Activity
-from .Analytics import Analytics
-from .ConceptMapResource import ConceptMapUtils
+from resources.analytics.Analytics import Analytics
+from resources.concept_map.ConceptMapUtils import ConceptMapUtils
 import json
 from mongoengine.errors import (
     DoesNotExist, 
@@ -27,7 +26,7 @@ class CreateReportsEndpoint(Resource):
             base_cm = ConceptMap.objects(id=baseId)
             key_concepts = Activity.objects.only("key_concepts").get(baseId=baseId)
             key_concepts = list(key_concepts.key_concepts)
-            analytics = Analytics(students_cms.to_json(),base_cm.to_json())
+            analytics = Analytics('reports', dict({'students_cms': students_cms.to_json(), 'base_cm': base_cm.to_json()}))
             ind_reports, group_report = analytics.generate_reports()
             self.save_ind_reports(ind_reports)
             gp_maps = analytics.generate_group_maps(key_concepts)
