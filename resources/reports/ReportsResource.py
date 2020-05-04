@@ -113,5 +113,3 @@ class RetrieveReportsEndpoint(Resource):
             return names_reports, 200
         except Exception as e:
             return {'Error': str(e)}, 500 
-
-
