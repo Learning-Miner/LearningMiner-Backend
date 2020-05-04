@@ -12,7 +12,7 @@ class Analytics:
             if 'students_cms' in data.keys():
                 students_cms = json.loads(data['students_cms'])
             if 'base_cm' in data.keys():
-                base_cm = json.loads(data['base_cm'])
+                base_cm = json.loads(data['base_cm'])                
             self.std_analytics = StudentAnalytics(students_cms, base_cm, txt_analytics)
             self.grp_analytics = GroupAnalytics(students_cms, base_cm, txt_analytics)
         if analytics_type == 'act_text':

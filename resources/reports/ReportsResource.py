@@ -23,7 +23,7 @@ class CreateReportsEndpoint(Resource):
             if user['rol'] == 'Student':
                 return {"Error" : "Student cannot create reports"}, 401
             students_cms = ConceptMap.objects(baseId=baseId)
-            base_cm = ConceptMap.objects(id=baseId)
+            base_cm = ConceptMap.objects().get(id=baseId)
             key_concepts = Activity.objects.only("key_concepts").get(baseId=baseId)
             key_concepts = list(key_concepts.key_concepts)
             analytics = Analytics('reports', dict({'students_cms': students_cms.to_json(), 'base_cm': base_cm.to_json()}))
