@@ -33,6 +33,7 @@ class CreateActivityEndpoint(Resource):
         act.title = body['title']
         act.key_concepts = key_concepts
         act.baseId = base_map_id
+        act.isClosed = False
         return act
 
     def process_activity_text(self, analytics, uid):
