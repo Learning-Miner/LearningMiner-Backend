@@ -87,7 +87,7 @@ class EditActivityEndpoint(Resource):
                 if 'dateClose' in body.keys():
                     act.update(set__dateClose=body['dateClose'])
                 if 'isClosed' in body.keys():
-                    act.update(set__iisClosed=body['isClosed'])
+                    act.update(set__isClosed=body['isClosed'])
                 if 'key_concepts' in body.keys():
                     act.update(set__key_concepts=body['key_concepts'])
                 return '', 204
