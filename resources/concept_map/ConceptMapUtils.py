@@ -25,6 +25,9 @@ class ConceptMapUtils:
             cm.concepts = self.create_concept_list(body['concepts'])
         if 'propositions' in body.keys():
             cm.propositions = self.create_propositions_list(body['propositions'])
+        if 'baseId' in body.keys():
+            base = ConceptMap.objects.get(id=body['baseId'])
+            cm.baseId = base.id
         cm.isBase = body['isBase']
         cm.dateCreated = datetime.now()
         return cm
@@ -36,3 +39,5 @@ class ConceptMapUtils:
         if 'propositions' in body.keys():
             propositions = self.create_propositions_list(body['propositions'])
             cm.update(set__propositions=propositions)
+        if 'isDone' in body.keys():
+            cm.update(set__isDone=body['isDone'])
