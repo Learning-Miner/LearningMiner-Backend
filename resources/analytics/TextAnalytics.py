@@ -220,3 +220,8 @@ class TextAnalytics():
                 base_map[key[indexs][0]] = key[indexs].tolist()[1:]
                 
         return base_map
+
+    def compute_similarity(self,base_cm,cm):
+        base = self.nlp(self.get_cm_string(base_cm))
+        std = self.nlp(self.get_cm_string(cm))
+        return base.similarity(std)

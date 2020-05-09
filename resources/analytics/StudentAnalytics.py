@@ -18,12 +18,14 @@ class StudentAnalytics():
         report['uid'] = std_cm['uid']['$oid']
         report['baseId'] = std_cm['baseId']['$oid']
         report['num_concepts'] = len(std_cm['concepts'])
-        report['similarity'] = self.compute_similarity(self.base_cm,std_cm)
+        report['similarity'] = self.compute_similarity(std_cm)
         report['time_used'] = self.compute_time_used(std_cm['dateCreated'],std_cm['dateFinished'])
         return report
 
-    def compute_similarity(self,base_cm,cm):
-        return 100
+    def compute_similarity(self,cm):        
+        base_cm = {'concepts':self.base_cm['concepts'],'propositions':self.base_cm['propositions']}
+        cm = {'concepts':cm['concepts'],'propositions':cm['propositions']}
+        return self.txt_analytics.compute_similarity(base_cm,cm)
 
     def compute_time_used(self,dateCreated,dateFinished):
         dateCreated = datetime.datetime.fromtimestamp(dateCreated['$date']/1000)
