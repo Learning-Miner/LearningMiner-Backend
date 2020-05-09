@@ -95,21 +95,28 @@ class EditActivityEndpoint(Resource):
                 return {'Message': 'User is not authorized to edit this activity'}, 401
         except Exception as e:
            return {'Error': str(e)}, 500
-    
+
+class GetActivityEnpoint(Resource):
     @jwt_required
-    def get(self,actId):
+    def post(self,resId):
         try:
             user = get_jwt_identity()
-            act = Activity.objects.only('title','key_concepts','dateClose','baseId','uid').get(id=actId)
-            if str(act.uid.id) == user['id']:
-                print(act.dateClose,type(act.dateClose))
-                json = dict()
-                json["Title"] = act.title
-                json["dateClose"] = str(act.dateClose)
-                json["baseId"] = str(act.baseId.id)
-                json["key_concepts"] = list(act.key_concepts)
-                return json, 200
-            else:
-                return {'Message': 'User is not authorized to edit this activity'}, 401
+            body = request.get_json()
+            if body['query'] == 'actId':
+                act = Activity.objects.only('title','key_concepts','dateClose','baseId','uid').get(id=resId)
+                json = self.activityResponse(act)                
+            elif body['query'] == 'baseId':
+                act = Activity.objects.only('title','key_concepts','dateClose','baseId','uid').get(baseId=resId)
+                json = self.activityResponse(act)
+            return json, 200
         except Exception as e:
            return {'Error': str(e)}, 500
+
+    def activityResponse(self,act):
+        json = dict()
+        json["Title"] = act.title
+        json["dateClose"] = str(act.dateClose)
+        json["baseId"] = str(act.baseId.id)
+        json["key_concepts"] = list(act.key_concepts)
+        json["actId"] = str(act.id)
+        return json
