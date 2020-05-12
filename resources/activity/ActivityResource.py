@@ -31,6 +31,8 @@ class CreateActivityEndpoint(Resource):
         act.text = body['text']
         act.dateClose = body['dateClose']
         act.title = body['title']
+        act.authors = body['authors']
+        act.database = body['database']
         act.key_concepts = key_concepts
         act.baseId = base_map_id
         act.isClosed = False
@@ -90,6 +92,8 @@ class EditActivityEndpoint(Resource):
                     act.update(set__isClosed=body['isClosed'])
                 if 'key_concepts' in body.keys():
                     act.update(set__key_concepts=body['key_concepts'])
+                if 'authors' in body.keys():
+                    act.update(set__authors=body['authors'])
                 return '', 204
             else:
                 return {'Message': 'User is not authorized to edit this activity'}, 401
@@ -103,10 +107,10 @@ class GetActivityEnpoint(Resource):
             user = get_jwt_identity()
             body = request.get_json()
             if body['query'] == 'actId':
-                act = Activity.objects.only('title','key_concepts','dateClose','baseId','uid').get(id=resId)
+                act = Activity.objects.only('title','key_concepts','dateClose','baseId','authors','database').get(id=resId)
                 json = self.activityResponse(act)                
             elif body['query'] == 'baseId':
-                act = Activity.objects.only('title','key_concepts','dateClose','baseId','uid').get(baseId=resId)
+                act = Activity.objects.only('title','key_concepts','dateClose','baseId','authors','database').get(baseId=resId)
                 json = self.activityResponse(act)
             return json, 200
         except Exception as e:
@@ -119,4 +123,6 @@ class GetActivityEnpoint(Resource):
         json["baseId"] = str(act.baseId.id)
         json["key_concepts"] = list(act.key_concepts)
         json["actId"] = str(act.id)
+        json["authors"] = act.authors
+        json["database"] = act.database
         return json
