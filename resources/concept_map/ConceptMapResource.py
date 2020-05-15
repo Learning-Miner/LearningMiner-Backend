@@ -77,12 +77,11 @@ class FilterUserConceptMapsEndpoint(Resource):
         return json
 
     def getEditMaps(self, user):
-        user_cms = ConceptMap.objects(uid=user['id']).only('title', 'id', 'isDone')
-        user_cm_titles_ids = [(str(cm.id), cm.title) for cm in user_cms if not cm.isDone]
-        user_cm_titles_ids = dict(user_cm_titles_ids)
+        user_cms = ConceptMap.objects(uid=user['id']).only('title', 'id', 'isDone', 'baseId')
+        user_cm_titles_ids = [(str(cm.id), cm.title, str(cm.baseId.id)) for cm in user_cms if not cm.isDone]
         json = list()
-        for id, title in user_cm_titles_ids.items():
-            entry = {"id": id, "title": title}
+        for cm_data in user_cm_titles_ids:
+            entry = {"id": cm_data[0], "title": cm_data[1], "baseId": cm_data[2]}
             json.append(entry)
         return json
 
