@@ -41,3 +41,5 @@ class ConceptMapUtils:
             cm.update(set__propositions=propositions)
         if 'isDone' in body.keys():
             cm.update(set__isDone=body['isDone'])
+        if 'dateFinished' in body.keys():
+            cm.update(set__dateFinished=body['dateFinished'])
