@@ -1,5 +1,11 @@
 # LearningMiner-Backend
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Learning-Miner/Learning-Miner-Manual/master/learningMiner.jpg" width="400" height="350">
+</p>
+
+Welcome to Backend repository for LearningMiner
+
 Set up for development
   1. Clone the repo in a convenient location.
   
